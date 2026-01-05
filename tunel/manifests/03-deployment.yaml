@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-public-home-lab
+  namespace: cloudflare
+  labels:
+    app: cloudflared-public-home-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared-public-home-lab
+  template:
+    metadata:
+      labels:
+        app: cloudflared-public-home-lab
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "cloudflare-public-home-lab"
+        vault.hashicorp.com/agent-inject-secret-credentials.json: "systemfoundation/cloudflare/public-home-lab"
+        vault.hashicorp.com/agent-inject-template-credentials.json: |
+          {{- with secret "systemfoundation/cloudflare/public-home-lab" -}}
+          {{ .Data.data.credentials.json }}
+          {{- end -}}
+    spec:
+      serviceAccountName: cloudflared-public-home-lab
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config/config.yaml
+            - run
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared/config
+              readOnly: true
+            - name: creds
+              mountPath: /etc/cloudflared/credentials
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-public-home-lab
+            items:
+              - key: config.yaml
+                path: config.yaml
+        - name: creds
+          emptyDir: {}

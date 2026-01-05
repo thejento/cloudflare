@@ -1,0 +1,6 @@
+{
+  "bound_service_account_names": ["cloudflared-public-home-lab"],
+  "bound_service_account_namespaces": ["cloudflare"],
+  "policies": ["cloudflare-public-home-lab"],
+  "ttl": "24h"
+}
