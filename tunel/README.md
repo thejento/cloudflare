@@ -39,6 +39,7 @@ For a quick and automated deployment, you can use the provided `bootstrap.sh` sc
     ```sh
     cloudflared tunnel login
     ```
+    After running the command, a browser window will open. Once you log in, you will be asked to pick one of your Cloudflare zones (domains). **Choose the zone you intend to use for your tunnel's public hostnames.** This step generates a `cert.pem` file that authorizes `cloudflared` to manage tunnels for your account.
 
 2.  **Run the Bootstrap Script:**
     Navigate to the `tunel` directory and execute the script. The script will guide you through the rest of the process.
@@ -62,6 +63,7 @@ First, create a tunnel and get the credentials.
     ```sh
     cloudflared tunnel login
     ```
+    After running the command, a browser window will open. Once you log in, you will be asked to pick one of your Cloudflare zones (domains). **Choose the zone you intend to use for your tunnel's public hostnames.** This step generates a `cert.pem` file that authorizes `cloudflared` to manage tunnels for your account.
 3.  Create the tunnel:
     ```sh
     cloudflared tunnel create public-home-lab

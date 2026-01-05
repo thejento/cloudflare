@@ -38,7 +38,11 @@ check_dep "jq"
 # --- Main script ---
 
 # 1. Cloudflare Login
-info "Please run 'cloudflared tunnel login' in another terminal if you haven't already."
+info "The next step is to log in with the 'cloudflared' CLI."
+info "This will open a browser window and ask you to log in to your Cloudflare account."
+warn "After logging in, you will be prompted to select one of your Cloudflare zones (domains)."
+warn "Be sure to choose the zone where you plan to create public hostnames for your tunnel."
+info "Please run 'cloudflared tunnel login' in another terminal, and then press Enter here to continue."
 read -p "Press [Enter] to continue once you have logged in..."
 
 # 2. Tunnel Configuration
