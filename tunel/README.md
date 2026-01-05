@@ -27,6 +27,26 @@ This document outlines the procedure to deploy a Cloudflared tunnel in a Kuberne
 └── README.md
 ```
 
+## Quick Start
+
+For a quick and automated deployment, you can use the provided `bootstrap.sh` script.
+
+**Prerequisites for Quick Start:**
+*   `jq` installed on your local machine.
+
+1.  **Cloudflare Login (Manual Step):**
+    First, log in to Cloudflare using the `cloudflared` CLI. This step requires browser interaction.
+    ```sh
+    cloudflared tunnel login
+    ```
+
+2.  **Run the Bootstrap Script:**
+    Navigate to the `tunel` directory and execute the script. The script will guide you through the rest of the process.
+    ```sh
+    cd tunel
+    ./bootstrap.sh
+    ```
+
 ## Deployment Steps
 
 ### 1. Vault Configuration

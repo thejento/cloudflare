@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-repo/cloudflare.git # <-- IMPORTANT: Change this to your repository URL
+    repoURL: https://github.com/thejento/cloudflare.git
     targetRevision: HEAD
     path: tunel/manifests
   destination:
