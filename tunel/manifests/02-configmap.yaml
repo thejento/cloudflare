@@ -5,13 +5,13 @@ metadata:
   namespace: cloudflare
 data:
   config.yaml: |
-    tunnel: 2ecc84aa-47f3-45ba-a314-4698d7c1e898
-    credentials-file: /vault/secrets/credentials.json
-    no-autoupdate: true
-    metrics: 0.0.0.0:2000
     ingress:
       - hostname: n8n.thetvf.org
         service: http://n8n-service.n8n.svc:5878
       # This is a catch-all rule that will return a 404 for any other hostname.
       # It's a good practice to have this as the last rule.
       - service: http_status:404
+    tunnel: 2ecc84aa-47f3-45ba-a314-4698d7c1e898
+    credentials-file: /vault/secrets/credentials.json
+    no-autoupdate: true
+    metrics: 0.0.0.0:2000
