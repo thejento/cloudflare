@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script automates the deployment of the Cloudflared tunnel.
-# It assumes that 'cloudflared', 'kubectl' and 'jq' are installed and configured.
+# It assumes that 'cloudflared', 'kubectl', 'jq', and 'vault' are installed and configured.
 
 # --- Colors for output ---
 RED='\033[0;31m'
@@ -33,6 +33,7 @@ check_dep() {
 check_dep "kubectl"
 check_dep "cloudflared"
 check_dep "jq"
+check_dep "vault"
 
 
 # --- Main script ---
@@ -47,7 +48,7 @@ read -p "Press [Enter] to continue once you have logged in..."
 
 # 2. Tunnel Configuration
 TUNNEL_NAME="public-home-lab"
-info "Checking for Cloudflare tunnel '$TUNNEL_NAME'..."
+info "Checking for Cloudflare tunnel '$TUNNEL_NAME' நான"
 
 if ! cloudflared tunnel list | grep -q "$TUNNEL_NAME"; then
     info "Tunnel '$TUNNEL_NAME' not found. Creating it..."
@@ -66,28 +67,34 @@ info "Found tunnel credentials at $CREDS_FILE"
 
 
 # 3. Vault Configuration
-info "Now, let's configure Vault."
-read -p "Enter the namespace where Vault is running [default: vault]: " VAULT_NAMESPACE
-VAULT_NAMESPACE=${VAULT_NAMESPACE:-vault}
+info "Now, let's configure Vault using the public Ingress URL."
 
-VAULT_POD=$(kubectl get pods -n "$VAULT_NAMESPACE" -l "app.kubernetes.io/name=vault" -o jsonpath="{.items[0].metadata.name}")
-if [ -z "$VAULT_POD" ]; then
-    error "Could not find a Vault pod in namespace '$VAULT_NAMESPACE'. Please ensure Vault is running and the pod has the label 'app.kubernetes.io/name=vault'."
+VAULT_HOST=$(kubectl get ingress vault -n vault -o jsonpath='{.spec.rules[0].host}')
+if [ -z "$VAULT_HOST" ]; then
+    error "Could not automatically determine the Vault Ingress host. Please check your Ingress configuration in the 'vault' namespace."
 fi
-info "Found Vault pod: $VAULT_POD"
+
+export VAULT_ADDR="http://${VAULT_HOST}"
+info "Found Vault URL. Setting VAULT_ADDR to: $VAULT_ADDR"
+
+warn "You now need to authenticate with Vault."
+warn "Please authenticate in another terminal (e.g., 'vault login <token>' or 'vault login -method=userpass')."
+warn "The authenticated user MUST have permissions to create policies and roles."
+read -p "Press [Enter] to continue once you have authenticated with Vault..."
+
 
 info "Storing tunnel credentials in Vault..."
-kubectl exec -it -n "$VAULT_NAMESPACE" "$VAULT_POD" -- /bin/sh -c "vault kv put systemfoundation/cloudflare/$TUNNEL_NAME credentials.json=@-" < "$CREDS_FILE"
+vault kv put "systemfoundation/cloudflare/$TUNNEL_NAME" "credentials.json=@$CREDS_FILE"
 
 info "Creating Vault policy..."
-kubectl exec -it -n "$VAULT_NAMESPACE" "$VAULT_POD" -- /bin/sh -c "vault policy write cloudflare-$TUNNEL_NAME -" < ./vault/policy.hcl
+vault policy write "cloudflare-$TUNNEL_NAME" ./vault/policy.hcl
 
 info "Creating Vault role..."
-# The role.json is a single line, so we can pass it as an argument
-ROLE_JSON=$(cat ./vault/role.json | tr -d '\n' | tr -d ' ')
-kubectl exec -it -n "$VAULT_NAMESPACE" "$VAULT_POD" -- /bin/sh -c "vault write auth/kubernetes/role/cloudflare-$TUNNEL_NAME -<<EOF
-$ROLE_JSON
-EOF"
+vault write "auth/kubernetes/role/cloudflare-$TUNNEL_NAME" \
+    bound_service_account_names="cloudflared-public-home-lab" \
+    bound_service_account_namespaces="cloudflare" \
+    policies="cloudflare-public-home-lab" \
+    ttl="24h"
 
 
 # 4. ArgoCD Deployment
