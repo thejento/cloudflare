@@ -17,6 +17,12 @@ The following rule has been added:
 
 This rule tells `cloudflared` to route any traffic received for `n8n.thetvf.org` to the internal Kubernetes service `n8n-service` in the `n8n` namespace on port `5878`.
 
+## DNS Management
+
+**You do not need to create any DNS records manually.**
+
+When the `cloudflared` daemon starts with this ingress rule, it will automatically connect to your Cloudflare account and create the required CNAME record for `n8n.thetvf.org`. If the record already exists, `cloudflared` will ensure it correctly points to your tunnel.
+
 ## How to Add or Modify Endpoints (GitOps Workflow)
 
 There is no bootstrap script for managing endpoints, as this is handled declaratively through GitOps and ArgoCD.
