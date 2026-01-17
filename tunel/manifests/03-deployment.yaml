@@ -17,9 +17,9 @@ spec:
       annotations:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "cloudflare-public-home-lab"
-        vault.hashicorp.com/agent-inject-secret-credentials.json: "systemfoundation/cloudflare/public-home-lab"
+        vault.hashicorp.com/agent-inject-secret-credentials.json: "systemfoundation/data/cloudflare/public-home-lab"
         vault.hashicorp.com/agent-inject-template-credentials.json: |
-          {{- with secret "systemfoundation/cloudflare/public-home-lab" -}}
+          {{- with secret "systemfoundation/data/cloudflare/public-home-lab" -}}
           {{ .Data.data.credentials.json }}
           {{- end -}}
     spec:
