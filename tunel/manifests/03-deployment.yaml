@@ -28,16 +28,13 @@ spec:
         - name: cloudflared
           image: cloudflare/cloudflared:latest
           args:
-            - --config
-            - /etc/cloudflared/config/config.yaml
-            - --credentials-file
-            - /vault/secrets/credentials.json
             - tunnel
+            - --config
+            - /etc/cloudflared/config.yaml
             - run
-            - 2ecc84aa-47f3-45ba-a314-4698d7c1e898
           volumeMounts:
             - name: config
-              mountPath: /etc/cloudflared/config
+              mountPath: /etc/cloudflared
               readOnly: true
       volumes:
         - name: config
