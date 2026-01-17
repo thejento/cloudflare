@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cloudflare-to-n8n
+  namespace: n8n
+spec:
+  podSelector:
+    matchLabels:
+      app: n8n
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: cloudflare-tunnel-namespace
+      ports:
+        - protocol: TCP
+          port: 5878

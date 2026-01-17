@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n-endpoint-policies
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/thejento/cloudflare.git
+    targetRevision: HEAD
+    path: endpoints/n8n
+  destination:
+    server: https://kubernetes.default.svc
+    # The destination namespace is not strictly needed as the NetworkPolicy manifest has its own namespace defined.
+    # However, it's good practice to set it to the target namespace.
+    namespace: n8n
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
