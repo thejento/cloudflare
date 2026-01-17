@@ -35,7 +35,7 @@ spec:
             - 0.0.0.0:2000
             - tunnel
             - run
-            - public-home-lab
+            - 2ecc84aa-47f3-45ba-a314-4698d7c1e898
           volumeMounts:
             - name: creds
               mountPath: /etc/cloudflared/credentials
