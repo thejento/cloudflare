@@ -27,16 +27,15 @@ spec:
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:latest
-          command: ["/bin/sh", "-c"]
           args:
-            - |
-              set -ex
-              echo "--- DEBUGGING: Listing credentials directory ---"
-              ls -l /etc/cloudflared/credentials/
-              echo "--- DEBUGGING: Content of credentials.json ---"
-              cat /etc/cloudflared/credentials/credentials.json
-              echo "--- DEBUGGING: Starting cloudflared ---"
-              cloudflared tunnel --no-autoupdate --metrics 0.0.0.0:2000 --credentials-file /etc/cloudflared/credentials/credentials.json run public-home-lab
+            - --credentials-file
+            - /etc/cloudflared/credentials/credentials.json
+            - --no-autoupdate
+            - --metrics
+            - 0.0.0.0:2000
+            - tunnel
+            - run
+            - public-home-lab
           volumeMounts:
             - name: creds
               mountPath: /etc/cloudflared/credentials
