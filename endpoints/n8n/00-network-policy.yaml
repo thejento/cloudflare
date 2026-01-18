@@ -8,12 +8,15 @@ spec:
     matchLabels:
       app: n8n
   policyTypes:
-    - Ingress
+  - Ingress
   ingress:
-    - from:
-      - namespaceSelector:
-          matchLabels:
-            name: cloudflare-tunnel-namespace
-      ports:
-        - protocol: TCP
-          port: 5878
+  - from:
+    # This rule allows traffic from pods in ANY namespace that have the following label.
+    # This is more direct than relying on a namespace label.
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          app: cloudflared-public-home-lab
+    ports:
+    - protocol: TCP
+      port: 5878
